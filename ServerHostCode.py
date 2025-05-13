@@ -35,6 +35,36 @@ def serverstart():
     batthread.start()
     ip = 'I AINT LEAKING TS!'
     return(ip)
+def stopbat():
+    global p2
+    filepath = r"serverstop.bat"
+    p2=subprocess.Popen(filepath, shell=True,stdin = subprocess.PIPE)
+    stdout, stderr = p2.communicate()
+def serverstop():
+    batthread = Thread(target=stopbat)
+    batthread.start()
+def stopServerSequence():
+    stopThread = Thread(target=stopSequence)
+    stopThread.start()
+def stopSequence():
+    serverstop()
+    time.sleep(5)
+    x = True
+    while x == True:
+        time.sleep(3)
+        try:
+            current_server = JavaServer.lookup('127.0.0.1:25565')
+            current_online = current_server.status().players.online
+            current_version = current_server.status().version.name
+        except:
+            x = False
+            writemessage = f'server sopped'
+            srcdir = r'\fabric server'
+            destdir = r'\Discord Bots\Server Backups\backup'
+            foldercopy(srcdir, destdir)
+        else:
+            serverstop()
+
 @client.event
 async def on_ready():#Runs when the bot is ready on Discord
         writemessage = f'{client.user} has connected to discord!'
