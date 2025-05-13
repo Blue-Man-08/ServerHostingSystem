@@ -25,7 +25,16 @@ Intents.message_content = True
 Intents.bans = True
 Intents.guild_typing = True
 client = discord.Client(intents=Intents)#gives the client the Intents selected
-
+def startbat():
+    global p1
+    filepath = r"fullstart.bat"
+    p1=subprocess.Popen(filepath, shell=True,stdin = subprocess.PIPE)
+    stdout, stderr = p1.communicate()
+def serverstart():
+    batthread = Thread(target=startbat)
+    batthread.start()
+    ip = 'I AINT LEAKING TS!'
+    return(ip)
 @client.event
 async def on_ready():#Runs when the bot is ready on Discord
         writemessage = f'{client.user} has connected to discord!'
@@ -46,5 +55,7 @@ async def on_member_join(member):
 async def on_message(message):
     if message.content == '!start' or message.content == '!Start':
         await message.channel.send(f'Server is starting, it may take a minute or two...')
-
+        the_ip = serverstart()
+        current_ip = the_ip
+        await message.channel.send(f'IP:    {the_ip}')
 client.run(TOKEN)
