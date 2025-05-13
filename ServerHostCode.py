@@ -15,9 +15,9 @@ from datetime import datetime
 import asyncio
 
 load_dotenv()
-
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
+
 Intents=discord.Intents.default()#Sets all bot perms to the Default, but is reccomended to tweak after
 Intents.members = True#Gives the bot the ability to see when a user joins or leaves a server.
 Intents.presences = True
@@ -25,6 +25,7 @@ Intents.message_content = True
 Intents.bans = True
 Intents.guild_typing = True
 client = discord.Client(intents=Intents)#gives the client the Intents selected
+
 
 def foldercopy(srcdir, destdir):
     currtime = datetime.now()
@@ -38,22 +39,27 @@ def startbat():
     filepath = r"fullstart.bat"
     p1=subprocess.Popen(filepath, shell=True,stdin = subprocess.PIPE)
     stdout, stderr = p1.communicate()
+
 def serverstart():
     batthread = Thread(target=startbat)
     batthread.start()
     ip = 'I AINT LEAKING TS!'
     return(ip)
+
 def stopbat():
     global p2
     filepath = r"serverstop.bat"
     p2=subprocess.Popen(filepath, shell=True,stdin = subprocess.PIPE)
     stdout, stderr = p2.communicate()
+
 def serverstop():
     batthread = Thread(target=stopbat)
     batthread.start()
+
 def stopServerSequence():
     stopThread = Thread(target=stopSequence)
     stopThread.start()
+
 def stopSequence():
     serverstop()
     time.sleep(5)
@@ -76,10 +82,12 @@ def stopSequence():
             logEvent(writemessage)
             serverstop()
 
+
 def logEvent(message):
     now = datetime.now()
     the_time = now.strftime("%H:%M:%S")
     with open(r"C:\Users\Prasad\Desktop\Discord Bots\FHS Monkeys\logfile.txt",'a') as logfile: logfile.write(f'{message} at {the_time} \n')
+
 
 async def status_task():
     message = "Minecraft 1.21.4"
@@ -116,6 +124,7 @@ async def status_task():
                     message = newMessage
                     await client.change_presence(activity=discord.Game(name=message))
 
+
 @client.event
 async def on_ready():#Runs when the bot is ready on Discord
         writemessage = f'{client.user} has connected to discord!'
@@ -133,6 +142,7 @@ async def on_member_join(member):
     writemessage = f'Hello {member.name}, welcome to {member.guild.name}! Make sure to check #rules and have fun!'
     await member.dm_channel.send(writemessage)#Sends "hi *user name*, welcome to my Discord Server!" to the User in the DM
     logEvent(writemessage)
+
 @client.event
 async def on_message(message):
     global current_ip
@@ -286,4 +296,5 @@ async def on_message(message):
             await message.author.dm_channel.send(file=discord.File(r'C:\Users\Prasad\Desktop\fabric server\logs\latest.log'))
             writemessage = f'Server logs sent to {message.author.name}'
             logEvent(writemessage)
+            
 client.run(TOKEN)
