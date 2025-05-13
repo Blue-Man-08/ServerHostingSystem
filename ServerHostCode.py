@@ -135,6 +135,68 @@ async def on_member_join(member):
     logEvent(writemessage)
 @client.event
 async def on_message(message):
+    global current_ip
+    if message.content == '!help' or message.content == '!Help' or message.content == '!commands' or message.content == '!Commands':
+        await message.channel.send(f'!Gamer - gives the role "Gamer" to you')
+        await message.channel.send(f'!status - Gives information about the server')
+        await message.channel.send(f'!start - starts the MC server, and gives IP')
+        await message.channel.send(f'!stop - stops MC server, only available to moderators')
+        await message.channel.send(f'!softstop - stops MC server, only if nobody is online')
+        await message.channel.send(f'!online - Lists the names of players that are online.')
+        await message.channel.send(f'!logs - Sends log in DM, only available to moderators.')
+        await message.channel.send(f'!logsdelete - Deletes log file, only available to moderators.')
+        await message.channel.send(f'!serverlogs - Sends server log in DM, only available to moderators.')
+        writemessage = f'!Help used successfully by {message.author.name}'
+        logEvent(writemessage)
+    if message.content == '!Gamer' or message.content == '!gamer':
+        role = message.author.guild.get_role(roles['gamer'])
+        await message.author.add_roles(role)
+        await message.channel.send(f'{message.author.name} was given the role of {role.name}')
+        writemessage = f'!Gamer used successfully by {message.author.name}'
+        logEvent(writemessage)
+    if message.content =='!status' or message.content == '!Status':
+        try:
+            current_server = JavaServer.lookup('127.0.0.1:25565')
+            current_online = current_server.status().players.online
+            current_version = current_server.status().version.name
+        except:
+            await message.channel.send(f'The server seems to be offline. Use !start to start the server!')
+            writemessage = f'!status used successfully by {message.author.name}'
+            logEvent(writemessage)
+        else:    
+            await message.channel.send(f'There are {current_online} player(s) online. The server is on version {current_version}.')
+            writemessage = f'!status used successfully by {message.author.name}'
+            logEvent(writemessage)
+    if message.content == '!online':
+        try:
+            current_server = JavaServer.lookup('127.0.0.1:25565')
+            current_online_names = []
+        except:
+            await message.channel.send(f'The server seems to be offline. Use !start to start the server!')
+            writemessage = f'!online used successfully by {message.author.name}'
+            logEvent(writemessage)      
+        else:
+            try:
+                for i in current_server.status().players.sample:
+                    current_online_names.append(i.name)
+            except:
+                await message.channel.send(f'The server is currently empty')
+                writemessage = f'!online used successfully by {message.author.name}'
+                logEvent(writemessage)
+            else:
+                newMessage = "Online players:"
+                for i in current_online_names:
+                    key = None
+                    for user, player in usernames.items():
+                        if player == i:
+                            key = user
+                    if key != None:
+                        newMessage = newMessage + "\n" + key
+                    else:
+                        newMessage = newMessage + "\n" + i
+                await message.channel.send(f'{newMessage}')
+                writemessage = f'!online used successfully by {message.author.name}'
+                logEvent(writemessage)
     if message.content == '!start' or message.content == '!Start':
         await message.channel.send(f'Server is starting, it may take a minute or two...')
         the_ip = serverstart()
