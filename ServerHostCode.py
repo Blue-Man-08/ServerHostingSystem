@@ -25,6 +25,14 @@ Intents.message_content = True
 Intents.bans = True
 Intents.guild_typing = True
 client = discord.Client(intents=Intents)#gives the client the Intents selected
+
+def foldercopy(srcdir, destdir):
+    currtime = datetime.now()
+    currtime = currtime.strftime("@%Y-%m-%d@%H-%M")
+    destdir = f"{destdir}{currtime}"
+    shutil.copytree(srcdir, destdir)
+    return(destdir)
+
 def startbat():
     global p1
     filepath = r"fullstart.bat"
