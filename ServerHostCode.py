@@ -81,6 +81,41 @@ def logEvent(message):
     the_time = now.strftime("%H:%M:%S")
     with open(r"C:\Users\Prasad\Desktop\Discord Bots\FHS Monkeys\logfile.txt",'a') as logfile: logfile.write(f'{message} at {the_time} \n')
 
+async def status_task():
+    message = "Minecraft 1.21.4"
+    changeStatus = True
+    while True:
+        await asyncio.sleep(8)
+        try:
+            current_server = JavaServer.lookup('127.0.0.1:25565')
+            current_online_names = []
+        except:
+            if changeStatus == True:
+                await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="IDLE FAN NOISE"))
+        else:
+
+            try:
+                for i in current_server.status().players.sample:
+                    current_online_names.append(i.name)
+            except:
+                if message != "Minecraft 1.21.4":
+                    message = "Minecraft 1.21.4"
+                    await client.change_presence(activity=discord.Game(name=message))
+            else:
+                newMessage = "Minecraft 1.21.4 \n Online:"
+                for i in current_online_names:
+                    key = None
+                    for user, player in usernames.items():
+                        if player == i:
+                            key = user
+                    if key != None:
+                        newMessage = newMessage + "\n" + key
+                    else:
+                        newMessage = newMessage + "\n" + i
+                if message != newMessage:
+                    message = newMessage
+                    await client.change_presence(activity=discord.Game(name=message))
+
 @client.event
 async def on_ready():#Runs when the bot is ready on Discord
         writemessage = f'{client.user} has connected to discord!'
@@ -105,6 +140,7 @@ async def on_message(message):
         the_ip = serverstart()
         current_ip = the_ip
         await message.channel.send(f'IP:    {the_ip}')
+        await client.change_presence(activity=discord.Game(name="Minecraft 1.21.4"))
         writemessage = f'!start used successfully by {message.author.name}'
         logEvent(writemessage)
     if message.content == '!stop' or message.content == '!Stop':
