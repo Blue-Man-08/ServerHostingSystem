@@ -217,4 +217,73 @@ async def on_message(message):
             await message.author.dm_channel.send(file=discord.File(r'C:\Users\Prasad\Desktop\fabric server\logs\latest.log'))
             writemessage = f'!stop used successfully by {message.author.name}'
             logEvent(writemessage)
+        if message.content == '!softstop':
+        writemessage = f'!softstop attempted by {message.author.name}'
+        logEvent(writemessage)
+        try:
+            current_server = JavaServer.lookup('127.0.0.1:25565')
+            current_status = current_server.status
+            current_online = current_server.status().players.online
+            current_version = current_server.status().version.name
+        except:
+            await message.channel.send(f'The server seems to be offline. Use !start to start the server!')
+            writemessage = f'!softstop(offline) used by {message.author.name}'
+            logEvent(writemessage)
+        else:
+            if current_online == 0:
+                await message.channel.send('Nobody is Online. The server is stopping now.')
+                stopServerSequence()
+                writemessage = f'!softstop used successfully by {message.author.name}'
+                logEvent(writemessage)
+            else:          
+                await message.channel.send(f'There are {current_online} player(s) online.')
+                writemessage = f'!softstop(denied) used by {message.author.name}'
+                logEvent(writemessage)
+    if "!user" in message.content:
+        if message.author == client.user:
+            return
+        parts = message.content.split(" ")
+        if len(parts) != 2:
+            await message.channel.send(f'Sorry, that is an invalid use. Please use "!user <username>" to set your Minecraft username.')
+            message = ""
+        else:
+            if parts[1] in usernames.values():
+                await message.channel.send(f'Sorry, {parts[1]} is already used by another user. Check for spelling mistakes and try again.')
+            else:
+                parts[1]
+                usernames[message.author.name] = parts[1]
+                with open(r"C:\Users\Prasad\Desktop\Discord Bots\FHS Monkeys\UserSave.txt",'a') as userFile: userFile.write(f'{message.author.name};{parts[1]} \n')
+                await message.channel.send(f'Successfuly saved {parts[1]} as your username.')
+    if message.content == '!logs':
+        now = datetime.now()
+        the_time = now.strftime("%H:%M:%S")
+        role = discord.utils.get(message.author.guild.roles, name="Moderator")
+        writemessage = f'Logs requested by {message.author.name}'
+        logEvent(writemessage)
+        if role in message.author.roles:
+            await message.channel.send(f'Logs will be sent directly')
+            await message.author.create_dm()#Creates a DM with user
+            await message.author.dm_channel.send(file=discord.File(r"C:\Users\Prasad\Desktop\Discord Bots\FHS Monkeys\logfile.txt"))
+            writemessage = f'Logs sent to {message.author.name} at {the_time}'
+            logEvent(writemessage)
+    if message.content == '!logsdelete':
+        writemessage = f'Log deletion requested by {message.author.name}'
+        role = discord.utils.get(message.author.guild.roles, name="Moderator")
+        if role in message.author.roles:
+            await message.author.create_dm()#Creates a DM with user
+            await message.author.dm_channel.send(file=discord.File(r"C:\Users\Prasad\Desktop\Discord Bots\FHS Monkeys\logfile.txt"))
+            open(r"C:\Users\Prasad\Desktop\Discord Bots\FHS Monkeys\logfile.txt",'w').close()
+            await message.channel.send(f'Logs have been deleted.')
+            writemessage = f'Log files deleted by {message.author.name}'
+            logEvent(writemessage)
+    if message.content == '!serverlogs':
+        role = discord.utils.get(message.author.guild.roles, name="Moderator")
+        writemessage = f'Server logs requested by {message.author.name}'
+        logEvent(writemessage)
+        if role in message.author.roles:
+            await message.channel.send(f'Server logs will be sent directly as .txt')
+            await message.author.create_dm()#Creates a DM with user
+            await message.author.dm_channel.send(file=discord.File(r'C:\Users\Prasad\Desktop\fabric server\logs\latest.log'))
+            writemessage = f'Server logs sent to {message.author.name}'
+            logEvent(writemessage)
 client.run(TOKEN)
